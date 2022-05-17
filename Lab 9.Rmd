@@ -1,0 +1,61 @@
+---
+title: 'STAT 443: Lab 9'
+author: 'Flora Zhang 52135365'
+date: "21 Mar, 2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#if you do not have the package, type install.packages("name_of_the_package")
+library(knitr)
+library(tseries)
+library(readr)
+library(zoo)
+```
+
+```{r}
+LakeHuron.train = window(LakeHuron, start = 1875, end = 1967)
+LakeHuron.test = window(LakeHuron, start = 1968, end = 1972)
+```
+
+
+1. The data may show a slightly decreasing trend. Ignore this possible decreasing trend in
+what follows. Plot the LakeHuron.train data, its acf and pacf. Determine an appropriate
+ARMA model and explain your choice.
+```{r}
+plot(LakeHuron.train)
+acf(LakeHuron.train)
+pacf(LakeHuron.train)
+```
+We observe an exponentially decreasing lag from the ACF. The PACF cuts off at lag 2. This suggests an AR(2) model. 
+
+
+2. Fit the model you chose above using the function arima(). Write down the fitted model.
+```{r}
+model = arima(x = LakeHuron.train, order = c(2,0,0))
+```
+The fitted model is: $X_t = 578.9888+ 1.0627X_{t-1} -0.2691X_{t-2} + Z_t$, where $Z_t$ ~ WN(0, 0.4815).
+
+3. Examine appropriate diagnostics for your fitted model. Specifically, first plot the acf of the residuals to see if there are significant autocorrelations after lag 0. Then, use tsdiag() to observe the standardized residuals and the p-values of the Ljung-Box version for the portmanteau test. Report what you observe and then comment on the fit.
+```{r}
+#plot acf of residuals
+residual = residuals(model)
+acf(residual)
+
+#tsdiag
+tsdiag(model)
+```
+4. Use the predict command in R to forecast the Lake Huron level for the next three years, i.e., 1968, 1969, and 1970. Provide 95% prediction intervals for each forecast.
+```{r}
+predict(model, n.ahead = 3, prediction.interval = T, level = 0.95)
+```
+
+5. Compare the forecast with the true values (in LakeHuron.test). Comment on what you
+find.
+```{r}
+
+```
+
